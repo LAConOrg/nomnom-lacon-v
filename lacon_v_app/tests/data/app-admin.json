@@ -4,7 +4,7 @@
   "email_verified": false,
   "expires_in": 300,
   "given_name": "Chris Rose",
-  "groups": ["App Admins"],
+  "groups": ["NomNom Admin"],
   "hugos-can-nominate": true,
   "hugos-can-vote": true,
   "id_token": "BOGON",

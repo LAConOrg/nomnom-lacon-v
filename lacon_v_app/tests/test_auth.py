@@ -68,7 +68,7 @@ def generate_auth_response(
     # Generate groups
     groups = []
     if has_admin_group:
-        groups.append("App Admins")
+        groups.append("NomNom Admin")
     # Add some random groups for variation
     for _ in range(fake.random_int(min=0, max=3)):
         groups.append(fake.word().title() + " Group")

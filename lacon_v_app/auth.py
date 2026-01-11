@@ -54,7 +54,7 @@ def get_wsfs_permissions(
 
     # Map groups to Django permissions
     groups = response.get("groups", [])
-    details["is_admin"] = "App Admins" in groups
+    details["is_admin"] = "NomNom Admin" in groups
 
     return
 
