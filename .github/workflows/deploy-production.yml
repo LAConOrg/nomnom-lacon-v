@@ -116,8 +116,12 @@ jobs:
       - name: Send deployment webhook
         env:
           WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
-          DEPLOY_WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK_URL }}
+          DEPLOY_WEBHOOK_URL: ${{ vars.DEPLOY_WEBHOOK_URL }}
           SHA: ${{ steps.determine_sha.outputs.sha }}
+          REF: ${{ github.ref }}
+          REPOSITORY: ${{ github.repository }}
+          SENDER: ${{ github.actor }}
+          WORKFLOW_RUN_ID: ${{ github.run_id }}
         run: |
           echo "Sending deployment webhook to production..."
 

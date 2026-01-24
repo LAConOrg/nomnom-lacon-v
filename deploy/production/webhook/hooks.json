@@ -1,0 +1,72 @@
+[
+  {
+    "id": "deploy-production",
+    "execute-command": "/bin/bash",
+    "command-working-directory": "/opt/nomnom",
+    "response-message": "Deployment initiated",
+    "pass-arguments-to-command": [
+      {
+        "source": "string",
+        "name": "-c"
+      },
+      {
+        "source": "string",
+        "name": "source /opt/nomnom/deploy/.env && /opt/nomnom/deploy/webhook/deploy.sh \"$0\" \"$1\" \"$2\" \"$DEPLOYMENT_HOSTNAME\" \"$3\""
+      },
+      {
+        "source": "payload",
+        "name": "sha"
+      },
+      {
+        "source": "string",
+        "name": "/opt/nomnom/deploy/compose.yml"
+      },
+      {
+        "source": "string",
+        "name": "/etc/nomnom-deployment/deploy.env"
+      },
+      {
+        "source": "string",
+        "name": "/etc/nomnom-deployment/rollback.log"
+      }
+    ],
+    "pass-environment-to-command": [
+      {
+        "source": "payload",
+        "envname": "ref"
+      },
+      {
+        "source": "payload",
+        "envname": "repository"
+      },
+      {
+        "source": "payload",
+        "envname": "sender"
+      }
+    ],
+    "trigger-rule": {
+      "and": [
+        {
+          "match": {
+            "type": "value",
+            "value": "deploy-production",
+            "parameter": {
+              "source": "payload",
+              "name": "hook_id"
+            }
+          }
+        },
+        {
+          "match": {
+            "type": "payload-hmac-sha256",
+            "secret": "{{ getenv "WEBHOOK_SECRET" }}",
+            "parameter": {
+              "source": "header",
+              "name": "X-Hub-Signature-256"
+            }
+          }
+        }
+      ]
+    }
+  }
+]

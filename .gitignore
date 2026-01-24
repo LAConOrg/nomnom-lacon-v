@@ -176,3 +176,8 @@ userlist.txt
 
 # used to perform template updates from my source code instead of upstream
 .copier-answers.local.yml
+
+# Deployment-specific configurations
+/deploy/pgbouncer/pgbouncer.ini
+/deploy/pgbouncer/userlist.txt
+/deploy/.env

@@ -1,0 +1,28 @@
+[Unit]
+Description=NomNom Deployment Webhook Service
+Documentation=https://github.com/adnanh/webhook
+After=network.target
+
+[Service]
+Type=simple
+User=nomnom-deploy
+Group=nomnom-deploy
+ExecStart=/opt/nomnom/deploy/webhook/webhook-wrapper.sh -hooks /etc/nomnom-deployment/hooks.json -verbose -port 9000 -template
+Restart=on-failure
+RestartSec=5s
+WorkingDirectory=/etc/nomnom-deployment
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/etc/nomnom-deployment /opt/nomnom/deploy
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=nomnom-webhook
+
+[Install]
+WantedBy=multi-user.target

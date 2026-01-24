@@ -1,4 +1,5 @@
 name: "lacon-v"
+
 x-image: &image
   image: ${NOMNOM_IMAGE:-ghcr.io/laconorg/nomnom-lacon-v}:${NOMNOM_VERSION:-main}
 x-boot: &boot
@@ -16,10 +17,19 @@ x-db: &db
   NOM_DB_PASSWORD: $NOM_DB_PASSWORD
 x-staticfiles: &staticfiles
   NOM_STATIC_FILE_ROOT: /staticfiles
+x-env_file: &env_file
+  # Environment files (loaded in order):
+  # 1. .env - Application configuration (secrets, DB credentials, email, OAuth, etc.)
+  #           Manually configured during initial install, rarely changes
+  # 2. /etc/nomnom-deployment/deploy.env - Version tag only (NOMNOM_VERSION=sha-xxx)
+  #           Auto-updated by deploy.sh on each deployment
+  env_file:
+    - .env
+    - /etc/nomnom-deployment/deploy.env
 
 services:
   web:
-    <<: [*image, *boot]
+    <<: [*image, *boot, *env_file]
     volumes:
       - staticfiles:/staticfiles
     ports:
@@ -28,8 +38,6 @@ services:
     links:
       - pgbouncer
       - redis
-    env_file:
-      - .env
     environment:
       <<: [*db, *redis, *staticfiles]
     healthcheck:
@@ -43,41 +51,36 @@ services:
           "CMD",
           "/bin/bash",
           "-c",
-          "set -o pipefail; curl -s --fail -H 'Host: nomnom.lacon.org' http://localhost:8000/watchman/ | jq --exit-status '.databases[].default.ok == true' > /dev/null",
+          "set -o pipefail; curl -s --fail -H 'Host: ${DEPLOYMENT_HOSTNAME}' http://localhost:8000/watchman/ | jq --exit-status '.databases[].default.ok == true' > /dev/null",
         ]
 
   worker:
-    <<: [*image, *boot]
+    <<: [*image, *boot, *env_file]
     command: /app/docker/start.sh worker
     links:
       - pgbouncer
       - redis
-    env_file:
-      - .env
     environment:
       <<: [*db, *redis, *staticfiles]
 
   scheduler:
-    <<: [*image, *boot]
+    <<: [*image, *boot, *env_file]
     command: /app/docker/start.sh beat
     links:
       - pgbouncer
       - redis
-    env_file:
-      - .env
     environment:
       <<: [*db, *redis, *staticfiles]
     volumes:
       - staticfiles:/staticfiles:ro
+      - ${EXPORT_DATA_PATH:-/local}:/data
 
   boot:
-    <<: *image
+    <<: [*image, *env_file]
     command: /bin/bash /app/docker/start.sh bootstrap
     user: root
     environment:
       <<: [*db, *redis, *staticfiles]
-    env_file:
-      - .env
     volumes:
       - staticfiles:/staticfiles
     depends_on:
@@ -97,7 +100,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=${NOM_DB_PASSWORD}
     healthcheck:
-      test: ["CMD", "pg_isready", "-h", "localhost", "-U nomnom_production"]
+      test: ["CMD", "pg_isready", "-h", "localhost", "-U", "${NOM_DB_USER}"]
 
   redis:
     image: redis:7
@@ -113,7 +116,7 @@ services:
   # This container and Dozzle provide a logging endpoint access over my personal tailnet,
   # so that I can view the container logs on this host without ssh as needed.
   tailscale-sidecar:
-    hostname: ${LOGGING_HOSTNAME:-nomnom-lacon-production-logs}
+    hostname: ${LOGGING_HOSTNAME:-nomnom-lacon-logs}
     volumes:
       - tailscale-data:/var/lib/tailscale
     devices:
@@ -131,7 +134,7 @@ services:
     network_mode: "service:tailscale-sidecar"
     restart: unless-stopped
     environment:
-      DOZZLE_HOSTNAME: "nomnom-lacon-production-logs"
+      DOZZLE_HOSTNAME: "${LOGGING_HOSTNAME:-nomnom-lacon-logs}"
       DOZZLE_AUTH_PROVIDER: forward-proxy
       DOZZLE_AUTH_HEADER_USER: "Tailscale-User-Login"
       DOZZLE_AUTH_HEADER_NAME: "Tailscale-User-Name"

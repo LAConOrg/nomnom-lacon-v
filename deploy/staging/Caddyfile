@@ -19,9 +19,16 @@ nomnom-staging.lacon.org {
 		}
 	}
 
+	# Webhook endpoint
+	@webhook path /hooks/deploy*
+	handle @webhook {
+		reverse_proxy localhost:9000
+	}
+
 	reverse_proxy localhost:8000
 	metrics /metrics
 
+	# Main site logging
 	log {
 		output file /var/log/caddy/nomnom-staging.lacon.org.log {
 			roll_size 100MiB
@@ -30,5 +37,14 @@ nomnom-staging.lacon.org {
 		}
 		format json
 		level INFO
+	}
+
+	# Separate log for webhook endpoint
+	log @webhook {
+		output file /var/log/caddy/webhook-staging.log {
+			roll_size 10MiB
+			roll_keep 5
+		}
+		format json
 	}
 }
