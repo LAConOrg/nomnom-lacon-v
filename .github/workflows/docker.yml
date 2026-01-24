@@ -239,6 +239,9 @@ jobs:
     env:
       CAN_PUSH_IMAGES: ${{ needs.prepare.outputs.can_push_images }}
       REGISTRY_IMAGE: ${{ needs.prepare.outputs.registry_image }}
+    outputs:
+      image_version: ${{ steps.meta.outputs.version }}
+      image_sha: ${{ steps.output_sha.outputs.sha }}
 
     steps:
       - name: Debug merge environment
@@ -286,6 +289,13 @@ jobs:
         uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5.7.0
         with:
           images: ${{ env.REGISTRY_IMAGE }}
+
+          tags: |
+            type=ref,event=branch
+            type=ref,event=tag
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=sha
 
       - name: Debug docker metadata
         env:
@@ -376,3 +386,75 @@ jobs:
           echo "If you're seeing this message, the multi-arch image"
           echo "was created and pushed successfully!"
           echo "============================"
+
+      - name: Output SHA for deployment
+        id: output_sha
+        run: |
+          # Extract just the SHA (short form) from the version
+          # The metadata action outputs the SHA in format: sha-<short-sha>
+          SHA="${{ github.sha }}"
+          echo "sha=${SHA}" >> "$GITHUB_OUTPUT"
+          echo "Full SHA for deployment: ${SHA}"
+
+  deploy-staging:
+    runs-on: ubuntu-latest
+    needs:
+      - merge
+    # Only deploy to staging on pushes to main (not PRs, not tags)
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: staging
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5
+        with:
+          enable-cache: false
+
+      - name: Send deployment webhook
+        env:
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+          DEPLOY_WEBHOOK_URL: ${{ vars.DEPLOY_WEBHOOK_URL }}
+          SHA: ${{ needs.merge.outputs.image_sha }}
+          REF: ${{ github.ref }}
+          REPOSITORY: ${{ github.repository }}
+          SENDER: ${{ github.actor }}
+          WORKFLOW_RUN_ID: ${{ github.run_id }}
+        run: |
+          echo "Sending automatic deployment webhook to staging..."
+          ./scripts/send_webhook.py \
+            "$DEPLOY_WEBHOOK_URL" \
+            "$WEBHOOK_SECRET" \
+            "deploy-staging" \
+            "$SHA" \
+            --ref "$REF" \
+            --repository "$REPOSITORY" \
+            --sender "$SENDER" \
+            --workflow-run-id "$WORKFLOW_RUN_ID"
+
+      - name: Deployment summary
+        if: always()
+        env:
+          SHA: ${{ needs.merge.outputs.image_sha }}
+          IMAGE_VERSION: ${{ needs.merge.outputs.image_version }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          echo "## Automatic Staging Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: Staging" >> $GITHUB_STEP_SUMMARY
+          echo "- **SHA**: \`$SHA\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image Version**: \`$IMAGE_VERSION\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Triggered by**: Docker image build on main" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${JOB_STATUS}" == "success" ]; then
+            echo "✅ Webhook sent successfully. Deployment in progress on staging host." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Deployment webhook failed. Check logs above for details." >> $GITHUB_STEP_SUMMARY
+          fi

@@ -84,34 +84,8 @@ jobs:
           echo "image_tag=$IMAGE_TAG" >> "$GITHUB_OUTPUT"
         id: check_image
 
-      - name: Prepare webhook payload
-        id: payload
-        env:
-          SHA: ${{ steps.determine_sha.outputs.sha }}
-          GITHUB_REF: ${{ github.ref }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_RUN_ID: ${{ github.run_id }}
-        run: |
-          # Create JSON payload
-          PAYLOAD=$(cat <<EOF
-          {
-            "hook_id": "deploy-production",
-            "sha": "$SHA",
-            "ref": "$GITHUB_REF",
-            "repository": "$GITHUB_REPOSITORY",
-            "sender": "$GITHUB_ACTOR",
-            "triggered_by": "github-actions",
-            "workflow_run_id": "$GITHUB_RUN_ID"
-          }
-          EOF
-          )
-
-          echo "Payload:"
-          echo "$PAYLOAD" | jq .
-
-          # Save payload to file for HMAC calculation
-          echo "$PAYLOAD" > payload.json
+      - name: Install uv
+        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5
 
       - name: Send deployment webhook
         env:
@@ -124,34 +98,15 @@ jobs:
           WORKFLOW_RUN_ID: ${{ github.run_id }}
         run: |
           echo "Sending deployment webhook to production..."
-
-          # Calculate HMAC signature
-          SIGNATURE="sha256=$(cat payload.json | openssl dgst -sha256 -hmac "$WEBHOOK_SECRET" | sed 's/^.* //')"
-
-          echo "Webhook URL: $DEPLOY_WEBHOOK_URL"
-          echo "Signature: $SIGNATURE"
-
-          # Send webhook with signature
-          RESPONSE=$(curl -s -w "\n%{http_code}" \
-            -X POST \
-            -H "Content-Type: application/json" \
-            -H "X-Hub-Signature-256: $SIGNATURE" \
-            -d @payload.json \
-            "$DEPLOY_WEBHOOK_URL")
-
-          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
-          BODY=$(echo "$RESPONSE" | head -n-1)
-
-          echo "HTTP Status: $HTTP_CODE"
-          echo "Response: $BODY"
-
-          if [ "$HTTP_CODE" != "200" ]; then
-            echo "❌ Webhook failed with status $HTTP_CODE"
-            echo "Response body: $BODY"
-            exit 1
-          fi
-
-          echo "✅ Webhook sent successfully"
+          ./scripts/send_webhook.py \
+            "$DEPLOY_WEBHOOK_URL" \
+            "$WEBHOOK_SECRET" \
+            "deploy-production" \
+            "$SHA" \
+            --ref "$REF" \
+            --repository "$REPOSITORY" \
+            --sender "$SENDER" \
+            --workflow-run-id "$WORKFLOW_RUN_ID"
 
       - name: Wait for deployment
         run: |
@@ -167,7 +122,7 @@ jobs:
           echo "  sudo journalctl -u nomnom-webhook.service -f"
           echo ""
           echo "Check deployment status:"
-          echo "  sudo tail -f /etc/nomnom-webhook/rollback.log"
+          echo "  sudo tail -f /etc/nomnom-deployment/rollback.log"
 
       - name: Deployment summary
         if: always()
