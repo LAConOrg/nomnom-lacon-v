@@ -1,0 +1,198 @@
+name: Deploy Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: "SHA to deploy (leave blank for latest main)"
+        required: false
+        type: string
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Need full history to verify SHAs
+          persist-credentials: false
+
+      - name: Determine SHA to deploy
+        id: determine_sha
+        env:
+          INPUT_SHA: ${{ inputs.sha }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          if [ -n "$INPUT_SHA" ]; then
+            SHA="$INPUT_SHA"
+            echo "Using provided SHA: $SHA"
+          else
+            SHA="$GITHUB_SHA"
+            echo "Using current SHA from main: $SHA"
+          fi
+
+          # Validate SHA format (40 hex characters)
+          if ! [[ "$SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "❌ Error: Invalid SHA format: $SHA"
+            echo "SHA must be 40 hexadecimal characters"
+            exit 1
+          fi
+
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "Deploying SHA: $SHA"
+
+      - name: Verify SHA exists
+        env:
+          SHA: ${{ steps.determine_sha.outputs.sha }}
+        run: |
+          echo "Verifying SHA exists in repository..."
+          if ! git cat-file -e "$SHA^{commit}" 2>/dev/null; then
+            echo "❌ Error: SHA $SHA not found in repository"
+            exit 1
+          fi
+
+          # Get commit info
+          echo "✅ SHA verified. Commit info:"
+          git log -1 --pretty=format:"  Author: %an <%ae>%n  Date: %ad%n  Subject: %s" "$SHA"
+          echo ""
+
+      - name: Check if Docker image exists
+        env:
+          SHA: ${{ steps.determine_sha.outputs.sha }}
+          REGISTRY: ghcr.io
+          IMAGE_NAME: ${{ github.repository }}
+        run: |
+          echo "Checking if Docker image exists for SHA..."
+
+          # Try to pull the image metadata
+          # Format: ghcr.io/laconorg/nomnom-lacon-v:sha-<short-sha>
+          SHORT_SHA="${SHA:0:7}"
+          IMAGE_TAG="sha-$SHORT_SHA"
+          FULL_IMAGE="${REGISTRY}/${IMAGE_NAME,,}:${IMAGE_TAG}"
+
+          echo "Looking for image: $FULL_IMAGE"
+
+          # We don't need to actually pull, just verify it exists
+          # This will be done by the deployment script on the target host
+          echo "✅ Will deploy image: $FULL_IMAGE"
+          echo "image_tag=$IMAGE_TAG" >> "$GITHUB_OUTPUT"
+        id: check_image
+
+      - name: Prepare webhook payload
+        id: payload
+        env:
+          SHA: ${{ steps.determine_sha.outputs.sha }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          # Create JSON payload
+          PAYLOAD=$(cat <<EOF
+          {
+            "hook_id": "deploy-production",
+            "sha": "$SHA",
+            "ref": "$GITHUB_REF",
+            "repository": "$GITHUB_REPOSITORY",
+            "sender": "$GITHUB_ACTOR",
+            "triggered_by": "github-actions",
+            "workflow_run_id": "$GITHUB_RUN_ID"
+          }
+          EOF
+          )
+
+          echo "Payload:"
+          echo "$PAYLOAD" | jq .
+
+          # Save payload to file for HMAC calculation
+          echo "$PAYLOAD" > payload.json
+
+      - name: Send deployment webhook
+        env:
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+          DEPLOY_WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK_URL }}
+          SHA: ${{ steps.determine_sha.outputs.sha }}
+        run: |
+          echo "Sending deployment webhook to production..."
+
+          # Calculate HMAC signature
+          SIGNATURE="sha256=$(cat payload.json | openssl dgst -sha256 -hmac "$WEBHOOK_SECRET" | sed 's/^.* //')"
+
+          echo "Webhook URL: $DEPLOY_WEBHOOK_URL"
+          echo "Signature: $SIGNATURE"
+
+          # Send webhook with signature
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -H "X-Hub-Signature-256: $SIGNATURE" \
+            -d @payload.json \
+            "$DEPLOY_WEBHOOK_URL")
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | head -n-1)
+
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "❌ Webhook failed with status $HTTP_CODE"
+            echo "Response body: $BODY"
+            exit 1
+          fi
+
+          echo "✅ Webhook sent successfully"
+
+      - name: Wait for deployment
+        run: |
+          echo "⏳ Deployment initiated on production host"
+          echo "The deployment script will:"
+          echo "  1. Pull the Docker image"
+          echo "  2. Update the .env file"
+          echo "  3. Deploy with docker compose"
+          echo "  4. Verify health checks"
+          echo "  5. Rollback automatically if anything fails"
+          echo ""
+          echo "Monitor deployment logs on production host:"
+          echo "  sudo journalctl -u nomnom-webhook.service -f"
+          echo ""
+          echo "Check deployment status:"
+          echo "  sudo tail -f /etc/nomnom-webhook/rollback.log"
+
+      - name: Deployment summary
+        if: always()
+        env:
+          SHA: ${{ steps.determine_sha.outputs.sha }}
+          IMAGE_TAG: ${{ steps.check_image.outputs.image_tag }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **SHA**: \`$SHA\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image Tag**: \`$IMAGE_TAG\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Triggered by**: @$GITHUB_ACTOR" >> $GITHUB_STEP_SUMMARY
+          echo "- **Workflow Run**: [$GITHUB_RUN_ID]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "$JOB_STATUS" == "success" ]; then
+            echo "✅ Webhook sent successfully. Deployment in progress on production host." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Monitoring" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Check deployment logs on nomnom.lacon.org:" >> $GITHUB_STEP_SUMMARY
+            echo '```bash' >> $GITHUB_STEP_SUMMARY
+            echo "sudo journalctl -u nomnom-webhook.service -f" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Deployment webhook failed. Check logs above for details." >> $GITHUB_STEP_SUMMARY
+          fi
