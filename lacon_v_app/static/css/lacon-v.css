@@ -36,10 +36,6 @@ nav ul {
     font-weight: bold;
 }
 
-nav ul li:last-of-type {
-    margin-left: auto;
-}
-
 nav a {
     text-decoration: none;
     color: black;

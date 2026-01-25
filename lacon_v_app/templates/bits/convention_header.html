@@ -38,6 +38,7 @@
             {% if ADVISORY_VOTES %}
                 <li><a href="{% url "advise:advisory_votes" %}">{% translate "Advisory Votes" %}</a></li>
             {% endif %}
+            <li style="margin-left: auto"><a href="https://portal.lacon.org">Member portal</a></li>
             <li><a href="{{ CONVENTION_SITE_URL }}">LAcon site</a></li>
             {% if request.user.is_staff %}
                 <li><a href="{% url "admin:index" %}">{% translate "Admin" %}</a></li>
