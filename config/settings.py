@@ -262,7 +262,7 @@ SOCIAL_AUTH_LACON_OIDC_ENDPOINT = get_string(
 )
 SOCIAL_AUTH_LACON_INVALIDATION_ENDPOINT = get_string(
     "NOM_AUTHENTIK_INVALIDATION_ENDPOINT",
-    "https://auth.lacon.org/flows/-/default/invalidation/",
+    "https://portal.lacon.org/logout",
 )
 SOCIAL_AUTH_LACON_JWKS_URI = get_string(
     "NOM_AUTHENTIK_JWKS_URI",
