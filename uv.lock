@@ -1127,7 +1127,7 @@ wheels = [
 
 [[package]]
 name = "nomnom-hugoawards"
-version = "2026.9.3"
+version = "2026.10.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "boto3" },
@@ -1178,8 +1178,9 @@ dependencies = [
     { name = "svcs" },
     { name = "whitenoise" },
 ]
+sdist = { url = "https://files.pythonhosted.org/packages/c4/a1/f128ae637cd9e36fcb785a7d5cd16a961a013ca242067545b8e29a76ac82/nomnom_hugoawards-2026.10.0.tar.gz", hash = "sha256:f597a393453be26edf25f0206cc668e682b63f24626a39a1df6de27de038f389", size = 2740464, upload-time = "2026-05-09T03:53:50.25Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d3/9b/917c5b04dba518bc1b9d0a0fc7b7a3280df2166138f7ba11703065a3687d/nomnom_hugoawards-2026.9.3-py3-none-any.whl", hash = "sha256:ec5fd8dc00e97f29bdfe1e06ed45abf9e01589edd181f076266d6fa1011aec88", size = 2524249, upload-time = "2026-05-07T18:48:10.744Z" },
+    { url = "https://files.pythonhosted.org/packages/ac/b3/36ecc2ac50d6d01d810ed453522b472e51f8323934dfe6a32df2553b010b/nomnom_hugoawards-2026.10.0-py3-none-any.whl", hash = "sha256:cdac9e285df484b47b001fb659da2f0937e3db384fbd4ef653d529feba3d9ab8", size = 2525970, upload-time = "2026-05-09T03:53:47.689Z" },
 ]
 
 [[package]]
