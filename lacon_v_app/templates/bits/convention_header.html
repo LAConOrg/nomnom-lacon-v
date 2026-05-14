@@ -6,9 +6,14 @@
                 width: 100%;
                 background-color: var(--lacon-teal);
                 padding: 0">
-        <div style="max-width: 1240px; width: 100%; margin: 0 auto; display: flex; align-items: center; justify-content: space-between">
+        <div style="max-width: 1240px;
+                    width: 100%;
+                    margin: 0 auto;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between">
             <div id="logo-container"
-                style="height: 100%;
+                 style="height: 100%;
                         display: flex;
                         align-items: center;
                         flex-shrink: 0;
@@ -16,32 +21,40 @@
                         background-color: var(--lacon-dark-blue)">
                 <a href="{{ CONVENTION_SITE_URL }}" style="flex-shrink: 0;">
                     <img id="logo"
-                        style="margin: 20px 0px"
-                        src="{% static "images/logo-menu-small-final2.png" %}"
-                        alt="LAcon V Logo">
+                         style="margin: 20px 0px"
+                         src="{% static "images/logo-menu-small-final2.png" %}"
+                         alt="LAcon V Logo">
                 </a>
             </div>
             {% if user.is_authenticated %}
                 <form method="post" action="{% url 'logout' %}">
-                    {{ user|user_display_name }} 
+                    {{ user|user_display_name }}
                     {% csrf_token %}
-                    <button class="" type="submit">
-                        {% blocktranslate %}Sign Out{% endblocktranslate %}
-                    </button>
+                    <button class="" type="submit">{% blocktranslate %}Sign Out{% endblocktranslate %}</button>
                 </form>
             {% endif %}
         </div>
     </div>
     <nav>
         <ul>
-            <li><a href="{% url 'election:index' %}">{% translate "Hugo Awards" %}</a></li>
+            <li>
+                <a href="{% url 'election:index' %}">{% translate "Hugo Awards" %}</a>
+            </li>
             {% if ADVISORY_VOTES %}
-                <li><a href="{% url "advise:advisory_votes" %}">{% translate "Advisory Votes" %}</a></li>
+                <li>
+                    <a href="{% url "advise:advisory_votes" %}">{% translate "Advisory Votes" %}</a>
+                </li>
             {% endif %}
-            <li style="margin-left: auto"><a href="https://portal.lacon.org">Member portal</a></li>
-            <li><a href="{{ CONVENTION_SITE_URL }}">LAcon site</a></li>
+            <li style="margin-left: auto">
+                <a href="https://portal.lacon.org">Member portal</a>
+            </li>
+            <li>
+                <a href="{{ CONVENTION_SITE_URL }}">LAcon V site</a>
+            </li>
             {% if request.user.is_staff %}
-                <li><a href="{% url "admin:index" %}">{% translate "Admin" %}</a></li>
+                <li>
+                    <a href="{% url "admin:index" %}">{% translate "Admin" %}</a>
+                </li>
             {% endif %}
         </ul>
     </nav>
