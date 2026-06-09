@@ -652,7 +652,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/5a/19/0423c1a8adb10c9e2
 
 [[package]]
 name = "django-structlog"
-version = "10.0.0"
+version = "10.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asgiref" },
@@ -660,9 +660,9 @@ dependencies = [
     { name = "django-ipware" },
     { name = "structlog" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/72/a9/102f316fb60dbec46642168979c4f57c9d8140fe43624ddca1ca6106274a/django_structlog-10.0.0.tar.gz", hash = "sha256:4e3fa4a930697fb9b649470e389419bb73b916a1ecf4f4bf2f8727f5cbfdb002", size = 23054, upload-time = "2025-10-22T21:20:21.14Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6d/18/5826ed903a3ab7c9e21092a2519b477dba1ef48ab9dfee5e101c91ee2663/django_structlog-10.1.0.tar.gz", hash = "sha256:812f61dea873e559511f42c0f3a7cdc36d4472f6cc15460565a97e5cbe06a76d", size = 23303, upload-time = "2026-05-30T23:15:49.473Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6c/83/d7245a2a2bb46ae65ecff00686181d632553b131ea0c5cbfcbdb8f89c190/django_structlog-10.0.0-py3-none-any.whl", hash = "sha256:4f9db3cb7b308df6aa4afe1353d9c19d5bac757022ddbbb5c24f3d0d6a91a240", size = 18159, upload-time = "2025-10-22T21:20:19.804Z" },
+    { url = "https://files.pythonhosted.org/packages/04/96/c635a5b295246f9dd73098986694b2011968a502d5221261a1b0f439586b/django_structlog-10.1.0-py3-none-any.whl", hash = "sha256:450842bfb03887fc14469570769e515d22ea67d753848a25cdbd05405382c090", size = 18461, upload-time = "2026-05-30T23:15:48.118Z" },
 ]
 
 [package.optional-dependencies]
@@ -1127,7 +1127,7 @@ wheels = [
 
 [[package]]
 name = "nomnom-hugoawards"
-version = "2026.10.1"
+version = "2026.10.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "boto3" },
@@ -1178,9 +1178,9 @@ dependencies = [
     { name = "svcs" },
     { name = "whitenoise" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/2d/61/c4624e6a8316678e0985c16b6017fb838d42509ca7a382dde9964a96cce9/nomnom_hugoawards-2026.10.1.tar.gz", hash = "sha256:e0518c6be6b06893899101cd28421353206ffa01d7dfc33a215272ee0d9c5d6b", size = 2745116, upload-time = "2026-06-03T15:37:33.335Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d2/1f/39b5019537995693a28a7ec2e73cd56359c1c73b8b4d45965f81dfbba0f7/nomnom_hugoawards-2026.10.2.tar.gz", hash = "sha256:4eaed31aa743b1b4a78c255cfd193326743200b5e0d69230a4ea72c2eebf54e5", size = 2746109, upload-time = "2026-06-09T01:01:57.677Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/8c/d2/444abae8e7677ea5557c809ee438f03ec463d2f83dbaab00c7c61300ff55/nomnom_hugoawards-2026.10.1-py3-none-any.whl", hash = "sha256:4bf32e5e93e33328956100aae42abe0938656754c8fbbddffe8e15061251486e", size = 2526945, upload-time = "2026-06-03T15:37:31.081Z" },
+    { url = "https://files.pythonhosted.org/packages/d9/20/b9a4a87cb6b195d1d008fe808b8c5a7f51c76c29f002edc0ba81f39c7710/nomnom_hugoawards-2026.10.2-py3-none-any.whl", hash = "sha256:1e3f440a59231e46112eaf167d255c71589922cd4b36d0df4f3b603eeea16de3", size = 2526981, upload-time = "2026-06-09T01:01:55.799Z" },
 ]
 
 [[package]]
