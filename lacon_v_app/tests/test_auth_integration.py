@@ -377,7 +377,10 @@ class TestOAuthLoginFlow:
 
         # Complete login flow
 
-        perform_oauth_login(client, oidc_mock, email, member_claims)
+        assert (
+            perform_oauth_login(client, oidc_mock, email, member_claims).status_code
+            == 200
+        )
 
         # Verify session cookie age is 6 months (180 days)
         six_months_in_seconds = 180 * 24 * 60 * 60
@@ -435,7 +438,10 @@ class TestMembershipTypes:
 
         # Complete login flow
 
-        perform_oauth_login(client, oidc_mock, email, member_claims)
+        assert (
+            perform_oauth_login(client, oidc_mock, email, member_claims).status_code
+            == 200
+        )
 
         # Verify user was created
         user = User.objects.get(username=member_claims["reg-id"])
@@ -457,7 +463,10 @@ class TestMembershipTypes:
 
         # Complete login flow
 
-        perform_oauth_login(client, oidc_mock, email, member_claims)
+        assert (
+            perform_oauth_login(client, oidc_mock, email, member_claims).status_code
+            == 200
+        )
 
         # Verify user was created
         user = User.objects.get(username=member_claims["reg-id"])
@@ -486,7 +495,10 @@ class TestWSFSPermissions:
 
         # Complete login flow
 
-        perform_oauth_login(client, oidc_mock, email, member_claims)
+        assert (
+            perform_oauth_login(client, oidc_mock, email, member_claims).status_code
+            == 200
+        )
 
         # Verify user was created
         user = User.objects.get(username=member_claims["reg-id"])
@@ -506,7 +518,10 @@ class TestWSFSPermissions:
 
         # Complete login flow
 
-        perform_oauth_login(client, oidc_mock, email, member_claims)
+        assert (
+            perform_oauth_login(client, oidc_mock, email, member_claims).status_code
+            == 200
+        )
 
         # Verify user was created
         user = User.objects.get(username=member_claims["reg-id"])
@@ -524,7 +539,10 @@ class TestWSFSPermissions:
 
         # Complete login flow
 
-        perform_oauth_login(client, oidc_mock, email, member_claims)
+        assert (
+            perform_oauth_login(client, oidc_mock, email, member_claims).status_code
+            == 200
+        )
 
         # Verify user was created with correct staff status
         user = User.objects.get(username=member_claims["reg-id"])
@@ -549,7 +567,10 @@ class TestBadgeNameHandling:
 
         # Complete login flow
 
-        perform_oauth_login(client, oidc_mock, email, member_claims)
+        assert (
+            perform_oauth_login(client, oidc_mock, email, member_claims).status_code
+            == 200
+        )
 
         # Verify user was created with badge name
         user = User.objects.get(username=member_claims["reg-id"])
@@ -570,7 +591,10 @@ class TestBadgeNameHandling:
 
         # Complete login flow
 
-        perform_oauth_login(client, oidc_mock, email, member_claims)
+        assert (
+            perform_oauth_login(client, oidc_mock, email, member_claims).status_code
+            == 200
+        )
 
         # Verify user was created with name field
         user = User.objects.get(username=member_claims["reg-id"])
@@ -591,7 +615,10 @@ class TestBadgeNameHandling:
 
         # Complete login flow
 
-        perform_oauth_login(client, oidc_mock, email, member_claims)
+        assert (
+            perform_oauth_login(client, oidc_mock, email, member_claims).status_code
+            == 200
+        )
 
         # Verify user was created with given_name
         user = User.objects.get(username=member_claims["reg-id"])
@@ -607,7 +634,8 @@ class TestBadgeNameHandling:
 
         # Complete login flow
 
-        perform_oauth_login(client, oidc_mock, email, member_claims)
+        response = perform_oauth_login(client, oidc_mock, email, member_claims)
+        assert response.status_code == 200
 
         # Verify user was created with nickname
         user = User.objects.get(username=member_claims["reg-id"])
@@ -640,7 +668,8 @@ class TestRegIdFormats:
 
         # Complete login flow
 
-        perform_oauth_login(client, oidc_mock, email, member_claims)
+        response = perform_oauth_login(client, oidc_mock, email, member_claims)
+        assert response.status_code == 200
 
         # Verify user was created with exact reg-id as username
         user = User.objects.get(username=reg_id_pattern)
