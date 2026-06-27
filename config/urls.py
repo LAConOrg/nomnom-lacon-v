@@ -43,6 +43,7 @@ urlpatterns = (
         path("__reload__/", include("django_browser_reload.urls")),
         path("p/", include("nomnom.hugopacket.urls", namespace="hugopacket")),
         path("bm/", include("nomnom.advise.urls", namespace="advise")),
+        path("markdownfield/", include("markdownfield.urls")),
     ]
     + debug_toolbar_urls()
     + djp.urlpatterns()
