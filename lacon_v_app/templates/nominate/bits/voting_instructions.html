@@ -13,7 +13,7 @@ It will have access to:
 {% if election.slug == "mpc" %}
     <h1>MPC Membership Voting Instructions</h1>
     <p>
-        All MPC member election ballots must be received by <b>Sunday, July 26, 2026, 1:00 PM PDT (UTC - 7)</b>
+        All MPC member election ballots must be received by <b>{% timezone "America/Los_Angeles" %}{{ election.voting_info.close_date|date:"l, F j, Y, g:i A T" }}{% endtimezone %}</b>
     </p>
     <h1>Notes on Voting</h1>
     <ul>
@@ -25,7 +25,7 @@ It will have access to:
 {% else %}
     <h1>Deadline</h1>
     <p>
-        All Hugo Awards ballots must be received by <b>Saturday, August 8, 2026, 12:00 noon PDT (UTC - 7)</b>
+        All Hugo Awards ballots must be received by <b>{% timezone "America/Los_Angeles" %}{{ election.voting_info.close_date|date:"l, F j, Y, g:i A T" }}{% endtimezone %}</b>
     </p>
     <p>You can make as many changes as you like to your ballot until the deadline.</p>
     <h1>Voting on the E-Ballot</h1>
