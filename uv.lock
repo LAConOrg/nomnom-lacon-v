@@ -650,17 +650,6 @@ wheels = [
 ]
 
 [[package]]
-name = "django-seed"
-version = "0.3.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "django" },
-    { name = "faker" },
-    { name = "toposort" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/5a/19/0423c1a8adb10c9e246f3a0e661165a7851bb7f4253eb338624081343e76/django-seed-0.3.1.tar.gz", hash = "sha256:93e65d2c10449c464b83e9031be02763ec10e786aa064d649c4dd5ad06fa0eea", size = 18336, upload-time = "2021-10-08T16:30:29.522Z" }
-
-[[package]]
 name = "django-structlog"
 version = "10.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1051,7 +1040,7 @@ requires-dist = [
     { name = "nomnom-hugoawards", specifier = ">=2026.9.3,<2027" },
     { name = "pyjwt", specifier = ">=2.8.0" },
     { name = "social-auth-app-django", specifier = "~=5.4" },
-    { name = "social-auth-core", specifier = "~=4.9.0" },
+    { name = "social-auth-core", specifier = "~=4.8.0" },
 ]
 
 [package.metadata.requires-dev]
@@ -1196,12 +1185,11 @@ wheels = [
 
 [[package]]
 name = "nomnom-hugoawards"
-version = "2026.10.2"
+version = "2026.11.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "boto3" },
     { name = "boto3-stubs", extra = ["s3"] },
-    { name = "botocore-stubs" },
     { name = "bs4" },
     { name = "celery" },
     { name = "django" },
@@ -1226,7 +1214,6 @@ dependencies = [
     { name = "django-model-utils" },
     { name = "django-oauth-toolkit" },
     { name = "django-render-block" },
-    { name = "django-seed" },
     { name = "django-structlog", extra = ["celery"] },
     { name = "django-svcs" },
     { name = "django-waffle" },
@@ -1247,9 +1234,9 @@ dependencies = [
     { name = "svcs" },
     { name = "whitenoise" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d2/1f/39b5019537995693a28a7ec2e73cd56359c1c73b8b4d45965f81dfbba0f7/nomnom_hugoawards-2026.10.2.tar.gz", hash = "sha256:4eaed31aa743b1b4a78c255cfd193326743200b5e0d69230a4ea72c2eebf54e5", size = 2746109, upload-time = "2026-06-09T01:01:57.677Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c4/f7/fd9aad7355f51822e7688d9f91cb27e966ca82c21350db1ebf69af529d89/nomnom_hugoawards-2026.11.1.tar.gz", hash = "sha256:2e7b87b3639c8be64eead0e31fa1aa9119b5f3ad6a8f58a24b7a95c090c5f747", size = 2749794, upload-time = "2026-07-29T05:30:50.648Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d9/20/b9a4a87cb6b195d1d008fe808b8c5a7f51c76c29f002edc0ba81f39c7710/nomnom_hugoawards-2026.10.2-py3-none-any.whl", hash = "sha256:1e3f440a59231e46112eaf167d255c71589922cd4b36d0df4f3b603eeea16de3", size = 2526981, upload-time = "2026-06-09T01:01:55.799Z" },
+    { url = "https://files.pythonhosted.org/packages/01/8f/150063ce95b6b23315ee20982fb210bfdba8352907a7dadd1f8b9a500872/nomnom_hugoawards-2026.11.1-py3-none-any.whl", hash = "sha256:a693a982d14ae1c5002a9befcc2b3dcfedfb57aebd250b8b386f2c1f6edfed4d", size = 2530596, upload-time = "2026-07-29T05:30:48.518Z" },
 ]
 
 [[package]]
@@ -1692,10 +1679,9 @@ wheels = [
 
 [[package]]
 name = "social-auth-core"
-version = "4.9.1"
+version = "4.8.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cryptography" },
     { name = "defusedxml" },
     { name = "oauthlib" },
     { name = "pyjwt", extra = ["crypto"] },
@@ -1703,9 +1689,9 @@ dependencies = [
     { name = "requests" },
     { name = "requests-oauthlib" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/32/2e/15fd3e5bfd7eba91b04e3ebf2dac8a2d1237ba69e63752567b0dc2586a4a/social_auth_core-4.9.1.tar.gz", hash = "sha256:34ee16bddc10b8bf5d6a90c3a033f6e5bb1300197984ad66a4d363783f23bcd8", size = 252961, upload-time = "2026-04-30T07:16:18.62Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/bc/a3/87381698a6d671e07d17ef9b89cb30d02b2cb4a9470d530da245ec4e2bd2/social_auth_core-4.8.5.tar.gz", hash = "sha256:fd10d44bff681a128d127f665f203c496658d5bbfc993ad1b5bbaed589eab573", size = 244501, upload-time = "2026-02-10T09:06:16.902Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ff/f2/0cb91ff294282800cc5ec7cefdfa3d87068c805d30920e3842fc859853ac/social_auth_core-4.9.1-py3-none-any.whl", hash = "sha256:2eca8a6ae678bae7e24e5aa3c72f99c77983012a09b8916ce9791dcfccade725", size = 457143, upload-time = "2026-04-30T07:16:17.235Z" },
+    { url = "https://files.pythonhosted.org/packages/f8/7e/7c30fcf6ebcbef6163a5be0514f5cdc551d276cd03eae92b524f46c4eb2a/social_auth_core-4.8.5-py3-none-any.whl", hash = "sha256:2591c2ce71127ad410e7ca9581bd88658031fdf7b209e05be5920d0bcc1c005a", size = 447336, upload-time = "2026-02-10T09:06:18.399Z" },
 ]
 
 [[package]]
@@ -1766,15 +1752,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/a3/ae/2ca4913e5c0f09781d75482874c3a95db9105462a92ddd303c7d285d3df2/tinycss2-1.5.1.tar.gz", hash = "sha256:d339d2b616ba90ccce58da8495a78f46e55d4d25f9fd71dfd526f07e7d53f957", size = 88195, upload-time = "2025-11-23T10:29:10.082Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/60/45/c7b5c3168458db837e8ceab06dc77824e18202679d0463f0e8f002143a97/tinycss2-1.5.1-py3-none-any.whl", hash = "sha256:3415ba0f5839c062696996998176c4a3751d18b7edaaeeb658c9ce21ec150661", size = 28404, upload-time = "2025-11-23T10:29:08.676Z" },
-]
-
-[[package]]
-name = "toposort"
-version = "1.10"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/69/19/8e955d90985ecbd3b9adb2a759753a6840da2dff3c569d412b2c9217678b/toposort-1.10.tar.gz", hash = "sha256:bfbb479c53d0a696ea7402601f4e693c97b0367837c8898bc6471adfca37a6bd", size = 11132, upload-time = "2023-02-27T13:59:51.834Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/f6/17/57b444fd314d5e1593350b9a31d000e7411ba8e17ce12dc7ad54ca76b810/toposort-1.10-py3-none-any.whl", hash = "sha256:cbdbc0d0bee4d2695ab2ceec97fe0679e9c10eab4b2a87a9372b929e70563a87", size = 8500, upload-time = "2023-02-25T20:07:06.538Z" },
 ]
 
 [[package]]
