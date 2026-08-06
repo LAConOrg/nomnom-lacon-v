@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.9
-FROM python:3.13-bookworm AS build
+FROM python:3.13-slim-bookworm AS build
 
 # The following does not work in Podman unless you build in Docker
 # compatibility mode: <https://github.com/containers/podman/issues/8477>
@@ -82,7 +82,7 @@ EOT
 
 ##########################################################################
 
-FROM python:3.13-bookworm AS run
+FROM python:3.13-slim-bookworm AS run
 SHELL ["sh", "-exc"]
 
 # add the application virtualenv to search path.
@@ -107,13 +107,9 @@ apt-get install -qyy \
     -o APT::Install-Suggests=false \
     ca-certificates \
     gettext \
-    python-is-python3 \
     libpcre3 \
     libxml2 \
-    tini \
-    curl \
-    jq \
-    dotenv
+    tini
 
 apt-get clean
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
